@@ -107,6 +107,20 @@ knitr::kable(design_df)
 
 **Christian Solares: Data frame:**
 
+monkey_boxplot \<- ggplot(long_data, aes(x = conditions, y = WPM, fill = conditions)) +
+
+geom_boxplot(alpha = .7) +
+
+labs(
+
+title = "Distribution of WPM by Experimental Condition",
+
+x = "Experimental Condition",
+
+y = "Words Per Minute" )
+
+monkey_boxplot
+
 ```{r}
 # 1) DATAFRAME:
 monkey_data_frame <- data.frame(
@@ -132,23 +146,26 @@ monkey_data_frame <- data.frame(
     run8 = c(64, 62, 73, 66, 81, 78, 78, 77, 93, 58, 84, 81, 59, 44, 56, 56),
     run9 = c(54, 66, 59, 60, 82, 86, 86, 83, 90, 65, 84, 74, 66, 67, 64, 67),
     run10 = c(60, 66, 66, 65, 87, 76, 70, 84, 90, 83, 80, 70, 72, 66, 60, 71),
-    average = c(59.4, 62.1, 68, 59.6, 91.3, 79.9, 78, 76.8, 98.1, 78.6, 88.9, 81, 62.5, 62, 90.4, 63.7)
+    average = c(59.4, 62.1, 68, 59.6, 91.3, 79.9, 78, 76.8, 98.1, 78.6, 88.9, 
+                81, 62.5, 62, 90.4, 63.7)
 )
 
 monkey_data_frame
-# Factorial ANOVA with Blocking of Averages
-# gum + music + participants (looking at the effect of gum, music, and participants seperately) 
-# gum*msuic (interaction between gum and music)
-model <- lm(average ~ gum + music + gum*music + participants, data = monkey_data_frame)
-anova_result <- anova(model)
-anova_result
+# Factorial ANOVA with Blocking of Averages 
+# (it seems the ANOVA of Raw Data is preferred, but I included this for completeness)
+# gum + music + participants (looking at the effect of gum, music, and participants separately) 
+# gum*music (interaction between gum and music)
+model_average <- lm(average ~ gum + music + gum*music + participants, 
+                    data = monkey_data_frame)
+average_anova_result <- anova(model_average)
+average_anova_result
 
-summary_result <- summary(model)
-print(summary_result)
+average_summary_result <- summary(model_average)
+print(average_summary_result)
 
 
 # Factorial ANOVA with Blocking of Raw Data (160 observations)
-# Using tidyverse syntax (pstat 100)
+# Using tidyverse syntax (Pstat 100)
 # (160 observations (WPM): 4 participants × 4 conditions × 10 runs)
 long_data <- monkey_data_frame |>
     pivot_longer(
@@ -163,10 +180,64 @@ print(summary(model_all))
 
 
 # 4) Visuals Of Our Data:
+# for the visuals I will be using long_data b/c this takes all observations into account
 # install.packages("ggplot2")
 library(ggplot2)
 
-monkey_boxplot <- ggplot()
+    # Box Plot:
+monkey_boxplot <- ggplot(long_data, aes(x = music, y = WPM, fill = gum)) +
+    geom_boxplot() +
+    labs(
+        title = "Distribution of Typing Speed by Music and Gum Conditions",
+        x = "Music",
+        y = "WPM",
+        fill = "Gum" )
+
+monkey_boxplot
+
+    # Bar Chart:
+# Using tidyverse syntax (Pstat 100)
+# after creating long_data, I have to group music and gum because there are multiple WPM values for each condition
+# grouping allows me to calculate the mean WPM for each condition
+# without grouping, I would be grouping all WPM values together which would not be accurate
+# I also cannot use model_average$average instead of long_data b/c
+# model_average$average is the average WPM for each participant in each condition
+mean_data <- long_data |>
+    group_by(music, gum) |>
+    summarise(Mean_WPM = mean(WPM)) 
+# this is the mean of all WPM values for each condition (mean(ex No Music + No Gum))
+
+interaction_plot <- ggplot(mean_data, aes(x = music, y = Mean_WPM, 
+                                          color = gum, group = gum)) +
+  geom_line(size = 1.5) +
+  geom_point(size = 3) +
+  labs(
+    title = "Interaction Plot: Music × Gum Effects on Average Typing Speed",
+    x = "Music",
+    y = "Mean WPM" )
+
+interaction_plot
+
+
+    # Line Graphs for Individual Participants:
+# Using tidyverse syntax (Pstat 100)
+# similar to the bar chart, I have to group by participants, music, and gum
+# to calculate the mean WPM for each participant in each condition
+participant_means <- long_data |>
+    group_by(participants, music, gum) |>
+    summarise(Mean_WPM = mean(WPM) )
+
+ggplot(participant_means, aes(x = music, y = Mean_WPM, 
+                              color = participants, group = participants)) +
+  geom_line() + 
+  geom_point() +
+  facet_wrap(~ gum) + # this creates separate plots for each gum condition
+  labs(
+    title = "Individual Participant Patterns Across Conditions",
+    subtitle = "Left box is No Gum, Right box is Yes Gum",
+    x = "Music",
+    y = "Mean WPM",
+    color = "Participants" )
 
 ```
 
