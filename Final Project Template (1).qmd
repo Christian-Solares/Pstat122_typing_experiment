@@ -177,8 +177,56 @@ head(long_data, 50)
 model_all <- lm(WPM ~ music + gum + music*gum + participants, data = long_data)
 anova(model_all)
 print(summary(model_all))
+```
 
+```{r}
+# 2) Validity of the anova assumptions:
 
+# Independence
+#Each of the 4 runs with no music and no gum,no music and gum, music and no gum, music and gum
+#were randomized for each participant. 
+#This helped to prevent bias in the order of runs for each participant. 
+#In addition there was a 10 minute break in between each run to minimize things like
+#fatigue or practice. Also each run within the condition was independent of the others. 
+#Therefore the independence assumption is valid
+
+# Normality
+plot(model_all, which = 2)
+shapiro.test(residuals(model_all))
+#The QQ plot shows that the data is relatively normal and 
+#the Shapiro Wilks tests says that the data is not normal. However the ANOVA is robust 
+#to moderate violations of normality as long as the sample size is big enough. 
+#Which it is in this case with a sample size of 160.
+#Therefore the normality assumption is valid
+
+#Homoscedasticity 
+plot(model_all,which =1)
+long_data$group <- paste(long_data$music, long_data$gum, sep = "_")
+bartlett.test(WPM ~ group, data = long_data)
+#Residuals vs Fitted graph shows no funnel shape therefore we assume Homoscedasticity
+#The Bartlett test fails to reject the null at a p-value of 0.95 thus showing homogeneity of variances
+#These test show that the homoscedasticity assumption is valid
+
+#Thus the anova is valid since all 3 of the assumptions are valid 
+```
+
+```{r}
+library(car)
+# 3) Finding the simplest linear regression model using AIC and BIC (Pstat 126).
+# Using the AIC and BIC method we can compare different models based on model fit
+# and model complexity. Thus finding the best combination of predictors 
+step(model_all, direction = "both")
+n <- nrow(long_data)
+step(model_all, direction = "both", k =log(n))
+new_model_all <- lm(formula = WPM ~ music + gum + participants, data = long_data)
+anova(new_model_all)
+print(summary(new_model_all))
+#Using AIC we find that the interaction between gum and music does not meaningfully improve the model.
+#Therefore it was removed
+
+```
+
+```{r}
 # 4) Visuals Of Our Data:
 # for the visuals I will be using long_data b/c this takes all observations into account
 # install.packages("ggplot2")
