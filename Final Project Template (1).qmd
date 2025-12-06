@@ -85,30 +85,72 @@ randomize_conditions <- function(name) {
 design_list <- lapply(sample(participants), randomize_conditions)
 design_df <- do.call(rbind, design_list)
 
-design_df$Run1 <- NA
-design_df$Run2 <- NA
-design_df$Run3 <- NA
-design_df$Run4 <- NA
-design_df$Run5 <- NA
-design_df$Run6 <- NA
-design_df$Run7 <- NA
-design_df$Run8 <- NA
-design_df$Run9 <- NA
-design_df$Run10 <- NA
-design_df$Avg <- NA
+design_df$Run1 <- c(62, 66, 60, 65, 57, 91, 94, 82, 78, 82, 82, 82, 60, 66, 72, 62)
+design_df$Run2 <- c(51, 61, 56, 62, 51, 65, 86, 84, 79, 76, 91, 82, 66, 65, 49, 65)
+design_df$Run3 <- c(54, 53, 46, 58, 54, 94, 81, 82, 96, 69, 87, 74, 58, 58, 80, 67)
+design_df$Run4 <- c(55, 67, 54, 60, 84, 76, 81, 83, 90, 86, 88, 84, 60, 65, 70, 62)
+design_df$Run5 <- c(63, 62, 58, 61, 79, 76, 79, 81, 89, 91, 97, 88, 64, 70, 56, 67)
+design_df$Run6 <- c(61, 62, 55, 60, 90, 88, 74, 74, 82, 85, 79, 87, 56, 67, 59, 67)
+design_df$Run7 <- c(60, 63, 64, 60, 68, 69, 71, 80, 97, 90, 87, 70, 62, 62, 58, 63)
+design_df$Run8 <- c(64, 62, 73, 66, 81, 78, 78, 77, 93, 58, 84, 81, 59, 44, 56, 56)
+design_df$Run9 <- c(54, 66, 59, 60, 82, 86, 86, 83, 90, 65, 84, 74, 66, 67, 64, 67)
+design_df$Run10 <- c(60, 66, 66, 65, 87, 76, 70, 84, 90, 83, 80, 70, 72, 66, 60, 71)
+design_df$Avg <- c(59.4, 62.1, 68, 59.6, 91.3, 79.9, 78, 76.8, 98.1, 78.6, 88.9, 81, 62.5, 62, 90.4, 63.7)
 
 design_df <- design_df[, c("Participant", "Music", "Gum",
                            "Run1", "Run2", "Run3", "Run4", "Run5", "Run6", "Run7", "Run8","Run9","Run10","Avg")]
-
-
 
 
 knitr::kable(design_df)
 
 ```
 
-\
-neither
+**Christian Solares: Data frame:**
+
+```{r}
+# 1) DATAFRAME:
+monkey_data_frame <- data.frame(
+    participants = rep(c("Isaac", "Tommy", "Chris", "Christian"), each = 4) ,
+    
+    music = c("No", "Yes", "Yes", "No", 
+              "No", "No", "Yes", "Yes",
+              "Yes", "No", "Yes", "No",
+              "Yes", "No", "No", "Yes") ,
+  
+    gum = c("Yes", "No", "Yes", "No",
+              "Yes", "No", "No", "Yes",
+              "No", "No", "Yes", "Yes",
+              "Yes", "No", "Yes", "No") ,
+    
+    run1 = c(62, 66, 60, 65, 57, 91, 94, 82, 78, 82, 82, 82, 60, 66, 72, 62),
+    run2 = c(51, 61, 56, 62, 51, 65, 86, 84, 79, 76, 91, 82, 66, 65, 49, 65),
+    run3 = c(54, 53, 46, 58, 54, 94, 81, 82, 96, 69, 87, 74, 58, 58, 80, 67),
+    run4 = c(55, 67, 54, 60, 84, 76, 81, 83, 90, 86, 88, 84, 60, 65, 70, 62),
+    run5 = c(63, 62, 58, 61, 79, 76, 79, 81, 89, 91, 97, 88, 64, 70, 56, 67),
+    run6 = c(61, 62, 55, 60, 90, 88, 74, 74, 82, 85, 79, 87, 56, 67, 59, 67),
+    run7 = c(60, 63, 64, 60, 68, 69, 71, 80, 97, 90, 87, 70, 62, 62, 58, 63),
+    run8 = c(64, 62, 73, 66, 81, 78, 78, 77, 93, 58, 84, 81, 59, 44, 56, 56),
+    run9 = c(54, 66, 59, 60, 82, 86, 86, 83, 90, 65, 84, 74, 66, 67, 64, 67),
+    run10 = c(60, 66, 66, 65, 87, 76, 70, 84, 90, 83, 80, 70, 72, 66, 60, 71),
+    average = c(59.4, 62.1, 68, 59.6, 91.3, 79.9, 78, 76.8, 98.1, 78.6, 88.9, 81, 62.5, 62, 90.4, 63.7)
+)
+
+monkey_data_frame
+# Factorial ANOVA with blocking
+# gum + music + participants (looking at the effect of gum, music, and participants seperately) 
+# gum*msuic (interaction between gum and music)
+model <- lm(average ~ gum + music + gum*music + participants, data = monkey_data_frame)
+anova_result <- anova(model)
+anova_result
+
+
+summary_result <- summary(model)
+print(summary_result)
+
+# 4) Visuals Of Our Data:
+
+
+```
 
 \
 
