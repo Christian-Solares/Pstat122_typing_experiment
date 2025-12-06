@@ -136,19 +136,37 @@ monkey_data_frame <- data.frame(
 )
 
 monkey_data_frame
-# Factorial ANOVA with blocking
+# Factorial ANOVA with Blocking of Averages
 # gum + music + participants (looking at the effect of gum, music, and participants seperately) 
 # gum*msuic (interaction between gum and music)
 model <- lm(average ~ gum + music + gum*music + participants, data = monkey_data_frame)
 anova_result <- anova(model)
 anova_result
 
-
 summary_result <- summary(model)
 print(summary_result)
 
-# 4) Visuals Of Our Data:
 
+# Factorial ANOVA with Blocking of Raw Data (160 observations)
+# Using tidyverse syntax (pstat 100)
+# (160 observations (WPM): 4 participants × 4 conditions × 10 runs)
+long_data <- monkey_data_frame |>
+    pivot_longer(
+        cols = starts_with("run"),
+        names_to = "run",
+        values_to = "WPM" )
+head(long_data, 50)
+
+model_all <- lm(WPM ~ music + gum + music*gum + participants, data = long_data)
+anova(model_all)
+print(summary(model_all))
+
+
+# 4) Visuals Of Our Data:
+# install.packages("ggplot2")
+library(ggplot2)
+
+monkey_boxplot <- ggplot()
 
 ```
 
