@@ -22,7 +22,7 @@ format:
     number-sections: true
     geometry: margin=.75in
 ---
-# checking to see if changing it from my end works for github
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(message =  FALSE)
 knitr::opts_chunk$set(warning =  FALSE)
