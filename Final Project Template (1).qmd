@@ -105,23 +105,16 @@ knitr::kable(design_df)
 
 ```
 
-**Christian Solares: Data frame:**
+model_all \<- lm(WPM \~ music + gum + music\*gum + participants, data = long_data)
 
-monkey_boxplot \<- ggplot(long_data, aes(x = conditions, y = WPM, fill = conditions)) +
-
-geom_boxplot(alpha = .7) +
-
-labs(
-
-title = "Distribution of WPM by Experimental Condition",
-
-x = "Experimental Condition",
-
-y = "Words Per Minute" )
-
-monkey_boxplot
+anova(model_all)
 
 ```{r}
+library(dbplyr)
+library(tidyr)
+library(tidyverse)
+library(DescTools)
+
 # 1) DATAFRAME:
 monkey_data_frame <- data.frame(
     participants = rep(c("Isaac", "Tommy", "Chris", "Christian"), each = 4) ,
@@ -174,10 +167,14 @@ long_data <- monkey_data_frame |>
         values_to = "WPM" )
 head(long_data, 50)
 
-model_all <- lm(WPM ~ music + gum + music*gum + participants, data = long_data)
-anova(model_all)
+model_all <- aov(WPM ~ music + gum + music:gum + participants, data = long_data)
+summary(model_all)
 print(summary(model_all))
 ```
+
+\
+
+\
 
 ```{r}
 # 2) Validity of the anova assumptions:
@@ -272,20 +269,27 @@ interaction_plot
 # similar to the bar chart, I have to group by participants, music, and gum
 # to calculate the mean WPM for each participant in each condition
 participant_means <- long_data |>
-    group_by(participants, music, gum) |>
-    summarise(Mean_WPM = mean(WPM) )
+  group_by(participants, music, gum) |>
+  summarise(Mean_WPM = mean(WPM), .groups = "drop")
 
-ggplot(participant_means, aes(x = music, y = Mean_WPM, 
-                              color = participants, group = participants)) +
-  geom_line() + 
+ggplot(participant_means,
+       aes(x = music,
+           y = Mean_WPM,
+           color = participants,
+           group = interaction(participants, gum),
+           linetype = gum)) +
+
+  geom_line() +
   geom_point() +
-  facet_wrap(~ gum) + # this creates separate plots for each gum condition
+
   labs(
     title = "Individual Participant Patterns Across Conditions",
-    subtitle = "Left box is No Gum, Right box is Yes Gum",
+    subtitle = "Line type shows Gum condition (solid = No Gum, dashed = Yes Gum)",
     x = "Music",
     y = "Mean WPM",
-    color = "Participants" )
+    color = "Participants",
+    linetype = "Gum Condition"
+  )
 
 ```
 
