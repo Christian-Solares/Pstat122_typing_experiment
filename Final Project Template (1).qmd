@@ -9,6 +9,9 @@ author:
 affiliation-title: "Quarter"
 format: 
  pdf:
+    code-block-bg: false
+    code-block-border-left: false
+    
     code-fold: true
     code-line-numbers: true
     code-copy: true
@@ -17,13 +20,18 @@ format:
     toc: false
     toc-location: left
     number-sections: true
-    geometry: margin=0.2in
+    geometry: margin=.75in
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(message =  FALSE)
 knitr::opts_chunk$set(warning =  FALSE)
 knitr::opts_chunk$set(error =  FALSE)
+
+library(dbplyr)
+library(tidyr)
+library(tidyverse)
+library(DescTools)
 
 ```
 
@@ -46,27 +54,35 @@ knitr::opts_chunk$set(error =  FALSE)
 
 # Introduction
 
--   Clear statement of the objective or research question.
--   Brief context or motivation.
+Productivity during academic tasks is commonly influenced by various study behaviors, yet the extent to which these behaviors improve performance remains unclear. This study investigates how two conventional study treatments—listening to music and chewing gum—affect performance on a cognitive–motor task. To operationalize “productivity,” we narrowed the scope of our research question to examine measurable performance outcomes on a typing speed test.
+
+Typing speed (measured in words per minute, WPM) was selected as the response variable because it represents a skill-based task that can be completed repeatedly within a short time frame, making it suitable for controlled experimentation. Although we initially planned to evaluate the effect of caffeine consumption on typing performance, practical constraints related to caffeine metabolism and required waiting periods made this approach infeasible for an in-session factorial experiment.
+
+Therefore, our study focuses on the following research question: **Is there an interaction effect between listening to music and chewing gum on typing speed?** In addition to evaluating potential interaction effects, we also assess whether each factor independently influences performance.
+
+This question is motivated by common student behaviors. Many students rely on music, fidgets, or small sensory stimuli (such as chewing gum) to improve concentration during extended study periods. By systematically testing these factors in a controlled setting, this experiment aims to determine whether these commonly used strategies enhance, hinder, or have no measurable effect on performance in a specific cognitive–motor task. We acknowledge that the effectiveness of sensory stimuli may vary across different types of tasks; however, this study seeks to provide preliminary evidence that may offer at least some broader insight into how such strategies influence academic performance.
 
 # Experimental Design
 
--   Description of factors and treatment structure.
--   Clearly state what you are measuring and the units. Examples: Number of words recalled (count), reaction time (seconds), taste rating (1–5 scale).
--   Identify which factors are fixed vs. random.
--   Description of design type (CRD, RCBD, factorial, etc.).
--   Explain how randomization, replication, and (if used) blocking were implemented.
--   Sample size: Provide number of observations per condition. Guideline: 5–10 per treatment for CRD, 3–5 blocks for RCBD, total feasible within 1 hour.
+The response variable for this experiment was words per minute (WPM) recorded using Monkeytype. This platform was selected because its scoring system incorporates accuracy penalties, thereby providing a more reliable measure of typing performance than raw speed alone. The two study treatments—listening to music (Yes/No) and chewing gum (Yes/No)—were arranged in a full 2×2 factorial design, resulting in four treatment combinations. All participants used some sort of earpiece device to listen to music keeping this method consistent across participants to reduce variability.
 
-(You are encouraged to explore more resources for determining the sample size )
+Participants were allowed to choose the type of music they typically listen to in a productive setting. Although music genres varied across individuals, we treated “listening to music” as a single categorical factor to maintain feasibility and focus, as the experiment was not designed to examine genre-specific effects. The same principle was applied to chewing gum: participants used their preferred flavor, but flavor differences were not considered as part of the experimental factors.
+
+All participants completed the typing task under standardized Monkeytype default settings to maintain consistency across trials. WPM values were recorded for each thirty second run, with the platform automatically adjusting scores downward when accuracy declined. To reduce bias, each participant’s order of treatment conditions was randomized. Within each assigned condition, participants completed ten consecutive typing trials, yielding ten WPM observations per condition. This replication served to reduce the influence of outliers and increase the precision of the estimated treatment effects.
+
+Participants were treated as blocks in the design to account for inherent differences in baseline typing proficiency. With four participants and four conditions, this resulted in a total of 40 observations per condition and 160 observations overall. The experiment was completed in under one hour. To minimize fatigue effects, participants took 15-minute breaks between conditions. Thus, for each participant, the ten trials within a condition constitute ten replicates of the corresponding treatment combination.
 
 # Data Collection
 
--   **Procedure**: Describe how and when the experiment was conducted (e.g., location, date, steps taken).
--   **Challenges/Adjustments**: Mention any difficulties or changes made during data collection (e.g., technical issues, time adjustments).
--   **Data Presentation**: Display the collected data in tables or graphs, summarizing key measures like mean and standard deviation..\
+Procedure**.** The experiment was conducted remotely within a one-hour window due to participants being out of town and unable to meet in person. Each participant completed the study in a private, distraction-free environment to minimize uncontrolled external influences. For each assigned treatment condition, participants completed ten typing runs, recording their WPM score after each run. Upon completing a condition, participants were given a 15-minute break before moving on to the next randomized treatment.
+
+One practical challenge of the study was the inability to gather all participants in the same physical location. As a result, clear instructions emphasized the importance of selecting a quiet, comfortable workspace to ensure that environmental variability did not confound the effects of the experimental factors.
+
+**RESULTS FROM EXPERIMENT:**
 
 ```{r, echo = FALSE}
+library(tidyverse)
+library(knitr)
 set.seed(123)
 
 participants <- c("Chris", "Christian", "Isaac", "Tommy")
@@ -95,7 +111,7 @@ design_df$Run7 <- c(60, 63, 64, 60, 68, 69, 71, 80, 97, 90, 87, 70, 62, 62, 58, 
 design_df$Run8 <- c(64, 62, 73, 66, 81, 78, 78, 77, 93, 58, 84, 81, 59, 44, 56, 56)
 design_df$Run9 <- c(54, 66, 59, 60, 82, 86, 86, 83, 90, 65, 84, 74, 66, 67, 64, 67)
 design_df$Run10 <- c(60, 66, 66, 65, 87, 76, 70, 84, 90, 83, 80, 70, 72, 66, 60, 71)
-design_df$Avg <- c(59.4, 62.1, 68, 59.6, 91.3, 79.9, 78, 76.8, 98.1, 78.6, 88.9, 81, 62.5, 62, 90.4, 63.7)
+design_df$Avg <- c(59.4, 62.1, 68, 59.5, 91.3, 79.9, 78, 76.8, 98.1, 78.6, 88.9, 81, 62.5, 62, 90.4, 63.7)
 
 design_df <- design_df[, c("Participant", "Music", "Gum",
                            "Run1", "Run2", "Run3", "Run4", "Run5", "Run6", "Run7", "Run8","Run9","Run10","Avg")]
@@ -103,11 +119,63 @@ design_df <- design_df[, c("Participant", "Music", "Gum",
 
 knitr::kable(design_df)
 
+
+# Convert wide → long format for summary statistics
+long_df <- design_df |>
+  pivot_longer(
+    cols = starts_with("Run"),
+    names_to = "Run",
+    values_to = "WPM"
+  )
+
+# Compute summary statistics by Music × Gum
+treatment_summary <- long_df |>
+  group_by(Music, Gum) |>
+  summarise(
+    Mean_WPM = mean(WPM),
+    SD_WPM   = sd(WPM),
+    N_Runs   = n(),
+    Min_WPM  = min(WPM),
+    Max_WPM  = max(WPM),
+    .groups = "drop"
+  )
+
+# Knit summary table
+kable(
+  treatment_summary,
+  caption = "Summary Statistics for Each Treatment Combination (Music × Gum)",
+  digits = 2,
+  align = "c"
+)
+
+# Summary by participant block (Participant × Music × Gum)
+participant_summary <- long_df |>
+  group_by(Participant, Music, Gum) |>
+  summarise(
+    Mean_WPM = mean(WPM),
+    SD_WPM   = sd(WPM),
+    N_Runs   = n(),
+    Min_WPM  = min(WPM),
+    Max_WPM  = max(WPM),
+    .groups = "drop"
+  ) |>
+  arrange(Participant, Music, Gum)
+
+kable(
+  participant_summary,
+  caption = "Summary Statistics by Participant (Block) and Treatment",
+  digits = 2,
+  align = "c"
+)
 ```
 
-model_all \<- lm(WPM \~ music + gum + music\*gum + participants, data = long_data)
+# Immediate Findings
 
-anova(model_all)
+Across all treatments, the overall means suggest that **listening to music produces slightly higher typing speeds than not listening**, and chewing gum alone appears to have a small negative effect, though neither factor shows a dramatic shift at the aggregate level. However, the participant-level summaries reveal substantial **individual differences** that overshadow the treatment effects: Chris and Tommy consistently type much faster across all conditions, while Christian and Isaac perform at considerably lower speeds regardless of treatment. These strong block effects indicate that **participant variability is far larger than any music or gum effect**, and any conclusions about treatment differences must account for these baseline performance differences.
+
+------------------------------------------------------------------------
+
+# Data/ANOVA Analysis
 
 ```{r}
 library(dbplyr)
