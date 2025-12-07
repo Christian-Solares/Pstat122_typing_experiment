@@ -167,8 +167,8 @@ long_data <- monkey_data_frame |>
         values_to = "WPM" )
 head(long_data, 50)
 
-model_all <- aov(WPM ~ music + gum + music:gum + participants, data = long_data)
-summary(model_all)
+model_all <- lm(WPM ~ music + gum + music*gum + participants, data = long_data)
+anova(model_all)
 print(summary(model_all))
 ```
 
