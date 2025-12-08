@@ -366,8 +366,83 @@ ggplot(participant_means,
 # Analysis
 
 -   **Exploratory Data**: Start with basic statistics (mean, SD) and visualizations (e.g., boxplots) to understand the data.
+\begin{table}[H]
+\centering
+\caption{Summary Statistics for Each Treatment Combination (Music × Gum)}
+\begin{tabular}{ccccccc}
+\hline
+\textbf{Music} & \textbf{Gum} & \textbf{Mean WPM} & \textbf{SD WPM} & \textbf{N Runs} & \textbf{Min WPM} & \textbf{Max WPM} \\
+\hline
+No  & No  & 70.78 & 11.71 & 40 & 44 & 94 \\
+No  & Yes & 68.33 & 12.43 & 40 & 49 & 90 \\
+Yes & No  & 73.97 & 12.14 & 40 & 53 & 97 \\
+Yes & Yes & 72.08 & 12.81 & 40 & 46 & 97 \\
+\hline
+\end{tabular}
+\end{table}
+```{r monkey_boxplot, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', fig.width=5, fig.height=3}
+library(ggplot2)
+
+monkey_boxplot <- ggplot(long_data, aes(x = music, y = WPM, fill = gum)) +
+    geom_boxplot(alpha = 0.8, width = 0.6, color = "black") +
+    scale_fill_brewer(palette = "Set2") +
+    labs(
+        title = "Typing Speed Boxplot",
+        subtitle = "Comparing WPM Across Treatment Combinations",
+        x = "Music Condition",
+        y = "Words Per Minute (WPM)",
+        fill = "Gum Condition"
+    ) +
+    theme_minimal(base_size = 14) +
+    theme(
+        plot.title = element_text(face = "bold", size = 18),
+        plot.subtitle = element_text(size = 13, margin = margin(b = 10)),
+        axis.title = element_text(face = "bold"),
+        axis.text = element_text(color = "black"),
+        legend.position = "right",
+        panel.grid.minor = element_blank(),
+        panel.grid.major.x = element_blank()
+    )
+
+monkey_boxplot
+```
+Initially, the data leads to the initial observation that neither the gum nor music treatments appear to have a strong effect on the average WPM. This is primarily evident in the above box plot, which displays the four means(corresponding to the four treatment conditions) as being all within each others' standard deviations. However, there is a slight indication that music may have a positive effect on WPM, as the two "Yes" music conditions have marginally higher means than their "No" music counterparts.   
+All four of the means are relatively close together, with the highest mean (73.97 WPM for Yes Music and No Gum) being only about 5 WPM higher than the lowest mean (68.33 WPM for No Music and Yes Gum). Additionally, all of the observations have relatively high standard deviations(all of which hover around 12 WPM), indicating a high level of variability in typing speeds across all treatment conditions. This suggests that individual differences between participants may be a more significant factor in typing speed than the treatments themselves. However, no definitive conclusions can be drawn from these initial observations alone, and further statistical analysis is necessary to determine the significance of any observed effects.   
 
 -   **Hypothesis Testing**: Test your hypothesis with an appropriate statistical test (e.g., ANOVA).
+
+Before we conduct the ANOVA, we must first ensure that the assumptions of the test are met. The independence assumption is satisfied as each run was randomized for each participant, and there were breaks between runs to minimize fatigue or practice effects. The normality assumption is reasonably met, as indicated by the QQ plot and the Shapiro-Wilk test, which shows that while the data is not perfectly normal, the ANOVA is robust to moderate violations of normality with a sufficiently large sample size (n=160). The homoscedasticity assumption is also satisfied, as shown by the residuals vs. fitted plot and the Bartlett test, which indicates homogeneity of variances across treatment groups.   
+We then conducted AIC and BIC model selection procedures to identify the most appropriate model for our data. Both methods suggested that the interaction term between music and gum did not significantly improve the model fit, leading us to exclude it from the final model. The final model followed: WPM ~ music + gum + participants.   
+We establish the following hypotheses:
+\begin{equation}
+\begin{aligned}
+H_0 &: \beta_{\text{music}} = 0 \\
+H_1 &: \beta_{\text{music}} \neq 0 \\
+\\
+H_0 &: \beta_{\text{gum}} = 0 \\
+H_1 &: \beta_{\text{gum}} \neq 0
+\end{aligned}
+\end{equation}
+We test these hypotheses using the following ANOVA table:
+```{r regression_table, echo=FALSE, message=FALSE, warning=FALSE}
+library(broom)
+library(knitr)
+
+model <- lm(WPM ~ music + gum + participants, data = long_data)
+
+kable(
+  tidy(model, conf.int = TRUE),
+  digits = 3,
+  caption = "Regression Results for WPM ~ music + gum + participants",
+  align = "c"
+)
+```
+Based on the aforementioned ANOVA results, we find that the p-value for the music treatment is 0.045, which is less than our significance level of 0.05. Therefore, we reject the null hypothesis for music and conclude that listening to music has a statistically significant effect on typing speed. On the other hand, the p-value for the gum treatment is 0.067, which is greater than 0.05. Thus, we fail to reject the null hypothesis for gum and conclude that chewing gum does not have a statistically significant effect on typing speed. Additionally, the three participants also show that they have statistically significant typing speeds than the baseline participant(Chris). This indicates that individual differences between participants play a significant role in typing speed, further emphasizing the importance of accounting for participant variability in our analysis.   
+Essentially, we are able to conclude the following:    
+- Listening to music has a statistically significant positive effect on typing speed. In our experiment, participants who listened to music typed, on average, about 3.5 WPM faster than those who did not listen to music.<br>
+- Chewing gum does not have a statistically significant effect on typing speed. The data suggests a slight decrease in WPM when chewing gum, but this effect is only significant at the 0.1 level, not the required 0.05 level. Therefore, this conclusion is marginal, but we cannot confidently state that gum has a meaningful impact on typing speed.   
+- There is no significant interaction effect between music and gum on typing speed. The lack of a significant interaction term in our model indicates that the effects of music and gum on typing speed are independent of each other.   
+- The largest source of variation and significance in typing speed comes from individual differences between participants. The participants themselves were consistent around their own average WPM, but there were large differences in average WPM between participants. This suggests that inherent typing ability or other individual factors play a more substantial role in determining typing speed than the experimental treatments.  
 
 -   **Tables, Figures, & Code**: Include key results (ANOVA table, post-test) and relevant `R` code excerpts where needed.
 
