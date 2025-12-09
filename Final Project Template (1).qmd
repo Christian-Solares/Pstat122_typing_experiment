@@ -41,7 +41,7 @@ library(DescTools)
 :::
 
 -   STUDENT 1 (NetID 1)
--   STUDENT 2 (NetID 2)
+-   Christian Solares (A022P62)
 -   STUDENT 3 (NetID 3)
 -   STUDENT 4 (NetID 4)
 ::::
@@ -78,7 +78,7 @@ Participants were treated as blocks in the design to account for inherent differ
 
 # Data Collection
 
-**Procedure & Challenges/Adjustments**   
+**Procedure & Challenges/Adjustments**\
 The experiment was conducted remotely within a one-hour window due to participants being out of town and unable to meet in person. Each participant completed the study in a private, distraction-free environment to minimize uncontrolled external influences. For each assigned treatment condition, participants completed ten typing runs, recording their WPM score after each run. Upon completing a condition, participants were given a 15-minute break before moving on to the next randomized treatment.
 
 One practical challenge of the study was the inability to gather all participants in the same physical location. As a result, clear instructions emphasized the importance of selecting a quiet, comfortable workspace to ensure that environmental variability did not confound the effects of the experimental factors.
@@ -92,15 +92,15 @@ set.seed(123)
 
 participants <- c("Chris", "Christian", "Isaac", "Tommy")
 conditions <- data.frame(
-  Music = c("No", "Yes", "No", "Yes"),
-  Gum   = c("No", "No", "Yes", "Yes")
-)
+    Music = c("No", "Yes", "No", "Yes"),
+    Gum   = c("No", "No", "Yes", "Yes")
+    )
 
 
 randomize_conditions <- function(name) {
-  cond <- conditions[sample(1:4), ]
-  cond$Participant <- name
-  cond
+    cond <- conditions[sample(1:4), ]
+    cond$Participant <- name
+    cond
 }
 
 design_list <- lapply(sample(participants), randomize_conditions)
@@ -116,10 +116,12 @@ design_df$Run7 <- c(60, 63, 64, 60, 68, 69, 71, 80, 97, 90, 87, 70, 62, 62, 58, 
 design_df$Run8 <- c(64, 62, 73, 66, 81, 78, 78, 77, 93, 58, 84, 81, 59, 44, 56, 56)
 design_df$Run9 <- c(54, 66, 59, 60, 82, 86, 86, 83, 90, 65, 84, 74, 66, 67, 64, 67)
 design_df$Run10 <- c(60, 66, 66, 65, 87, 76, 70, 84, 90, 83, 80, 70, 72, 66, 60, 71)
-design_df$Avg <- c(59.4, 62.1, 68, 59.5, 91.3, 79.9, 78, 76.8, 98.1, 78.6, 88.9, 81, 62.5, 62, 90.4, 63.7)
+design_df$Avg <- c(59.4, 62.1, 68, 59.5, 91.3, 79.9, 78, 76.8, 98.1, 78.6, 88.9, 
+                   81, 62.5, 62, 90.4, 63.7)
 
 design_df <- design_df[, c("Participant", "Music", "Gum",
-                           "Run1", "Run2", "Run3", "Run4", "Run5", "Run6", "Run7", "Run8","Run9","Run10","Avg")]
+                           "Run1", "Run2", "Run3", "Run4", "Run5", "Run6", 
+                           "Run7", "Run8","Run9","Run10","Avg")]
 
 
 knitr::kable(design_df)
@@ -127,16 +129,16 @@ knitr::kable(design_df)
 
 # Convert wide → long format for summary statistics
 long_df <- design_df |>
-  pivot_longer(
-    cols = starts_with("Run"),
-    names_to = "Run",
-    values_to = "WPM"
-  )
+    pivot_longer(
+        cols = starts_with("Run"),
+        names_to = "Run",
+        values_to = "WPM"
+        )
 
 # Compute summary statistics by Music × Gum
 treatment_summary <- long_df |>
-  group_by(Music, Gum) |>
-  summarise(
+    group_by(Music, Gum) |>
+    summarise(
     Mean_WPM = mean(WPM),
     SD_WPM   = sd(WPM),
     N_Runs   = n(),
@@ -173,6 +175,7 @@ kable(
   align = "c"
 )
 ```
+
 ------------------------------------------------------------------------
 
 # Analysis
@@ -258,53 +261,54 @@ monkey_boxplot <- ggplot(long_data, aes(x = music, y = WPM, fill = gum)) +
 
 monkey_boxplot
 ```
-Initially, the data leads to the initial observation that neither the gum nor music treatments appear to have a strong effect on the average WPM. This is primarily evident in the above box plot, which displays the four means(corresponding to the four treatment conditions) as being all within each others' standard deviations. However, there is a slight indication that music may have a positive effect on WPM, as the two "Yes" music conditions have marginally higher means than their "No" music counterparts.   
-All four of the means are relatively close together, with the highest mean (73.97 WPM for Yes Music and No Gum) being only about 5 WPM higher than the lowest mean (68.33 WPM for No Music and Yes Gum). Additionally, all of the observations have relatively high standard deviations(all of which hover around 12 WPM), indicating a high level of variability in typing speeds across all treatment conditions. This suggests that individual differences between participants may be a more significant factor in typing speed than the treatments themselves. 
+
+Initially, the data leads to the initial observation that neither the gum nor music treatments appear to have a strong effect on the average WPM. This is primarily evident in the above box plot, which displays the four means(corresponding to the four treatment conditions) as being all within each others' standard deviations. However, there is a slight indication that music may have a positive effect on WPM, as the two "Yes" music conditions have marginally higher means than their "No" music counterparts.\
+All four of the means are relatively close together, with the highest mean (73.97 WPM for Yes Music and No Gum) being only about 5 WPM higher than the lowest mean (68.33 WPM for No Music and Yes Gum). Additionally, all of the observations have relatively high standard deviations(all of which hover around 12 WPM), indicating a high level of variability in typing speeds across all treatment conditions. This suggests that individual differences between participants may be a more significant factor in typing speed than the treatments themselves.
+
 ```{r monkey_lineplot, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', fig.width=6, fig.height=2.3}
 participant_means <- long_data |>
-  group_by(participants, music, gum) |>
-  summarise(Mean_WPM = mean(WPM), .groups = "drop")
+    group_by(participants, music, gum) |>
+    summarise(Mean_WPM = mean(WPM), .groups = "drop")
 
 monkey_lineplot <- ggplot(
-  participant_means,
-  aes(
-    x = music,
-    y = Mean_WPM,
-    color = participants,
-    group = interaction(participants, gum),
-    linetype = gum
-  )
-) +
-  geom_line() +
-  geom_point(size = 2.5) +
-  scale_color_manual(values = my_colors) +
-  labs(
-    title = "Typing Speed Line Graph",
-    subtitle = "Comparing WPM Across Participants and Treatments",
-    x = "Music",
-    y = "Mean WPM",
-    color = "Participants",
-    linetype = "Gum Condition"
-  )
+    participant_means,
+    aes(
+        x = music,
+        y = Mean_WPM,
+        color = participants,
+        group = interaction(participants, gum),
+        linetype = gum
+        ) ) +
+    geom_line() +
+    geom_point(size = 2.5) +
+    scale_color_manual(values = my_colors) +
+    labs(
+        title = "Typing Speed Line Graph",
+        subtitle = "Comparing WPM Across Participants and Treatments",
+        x = "Music",
+        y = "Mean WPM",
+        color = "Participants",
+        linetype = "Gum Condition"
+        )
 
 monkey_lineplot
 ```
-Upon looking at the line graph above, we can see that there are substantial individual differences in typing speed among the four participants. Chris and Tommy consistently type at much higher speeds than Christian and Isaac across all treatment conditions. This suggests that individual baseline typing ability may play a more significant role in determining typing speed than the experimental treatments of music and gum. These strong block effects indicate that **participant variability is far larger than any music or gum effect**, and any conclusions about treatment differences must account for these baseline performance differences. Despite this, no definitive conclusions can be drawn from these initial observations alone, and further statistical analysis is necessary to determine the significance of any observed effects.  
+
+Upon looking at the line graph above, we can see that there are substantial individual differences in typing speed among the four participants. Chris and Tommy consistently type at much higher speeds than Christian and Isaac across all treatment conditions. This suggests that individual baseline typing ability may play a more significant role in determining typing speed than the experimental treatments of music and gum. These strong block effects indicate that **participant variability is far larger than any music or gum effect**, and any conclusions about treatment differences must account for these baseline performance differences. Despite this, no definitive conclusions can be drawn from these initial observations alone, and further statistical analysis is necessary to determine the significance of any observed effects.
 
 **Hypothesis Testing**
 
-Before we conduct the ANOVA, we must first ensure that the assumptions of the test are met. The independence assumption is satisfied as each run was randomized for each participant, and there were breaks between runs to minimize fatigue or practice effects. The normality assumption is reasonably met, as indicated by the QQ plot and the Shapiro-Wilk test, which shows that while the data is not perfectly normal, the ANOVA is robust to moderate violations of normality with a sufficiently large sample size (n=160). The homoscedasticity assumption is also satisfied, as shown by the residuals vs. fitted plot and the Bartlett test, which indicates homogeneity of variances across treatment groups(all of the R processes used for validating the aforementioned asssumptions can be found in the *Tables, Figures, & Code* section).   
-We then conducted AIC and BIC model selection procedures to identify the most appropriate model for our data(these processes can be found in the *Tables, Figures, & Code* section). Both methods suggested that the interaction term between music and gum did not significantly improve the model fit, leading us to exclude it from the final model. **The final model followed: WPM ~ music + gum + participants.**   
-We establish the following hypotheses:
-\begin{equation}
+Before we conduct the ANOVA, we must first ensure that the assumptions of the test are met. The independence assumption is satisfied as each run was randomized for each participant, and there were breaks between runs to minimize fatigue or practice effects. The normality assumption is reasonably met, as indicated by the QQ plot and the Shapiro-Wilk test, which shows that while the data is not perfectly normal, the ANOVA is robust to moderate violations of normality with a sufficiently large sample size (n=160). The homoscedasticity assumption is also satisfied, as shown by the residuals vs. fitted plot and the Bartlett test, which indicates homogeneity of variances across treatment groups(all of the R processes used for validating the aforementioned asssumptions can be found in the *Tables, Figures, & Code* section).\
+We then conducted AIC and BIC model selection procedures to identify the most appropriate model for our data(these processes can be found in the *Tables, Figures, & Code* section). Both methods suggested that the interaction term between music and gum did not significantly improve the model fit, leading us to exclude it from the final model. **The final model followed: WPM \~ music + gum + participants.**\
+We establish the following hypotheses: \begin{equation}
 \begin{aligned}
 H_0 &: \beta_{\text{music}} = 0 \\
 H_1 &: \beta_{\text{music}} \neq 0 \\
 H_0 &: \beta_{\text{gum}} = 0 \\
 H_1 &: \beta_{\text{gum}} \neq 0
 \end{aligned}
-\end{equation}
-We test these hypotheses using the following ANOVA table:
+\end{equation} We test these hypotheses using the following ANOVA table:
+
 ```{r regression_table, echo=FALSE, message=FALSE, warning=FALSE}
 library(broom)
 library(knitr)
@@ -318,16 +322,17 @@ kable(
   align = "c"
 )
 ```
-Based on the aforementioned ANOVA results, we find that the p-value for the music treatment is 0.045, which is less than our significance level of 0.05. Therefore, we reject the null hypothesis for music and conclude that listening to music has a statistically significant effect on typing speed. On the other hand, the p-value for the gum treatment is 0.067, which is greater than 0.05. Thus, we fail to reject the null hypothesis for gum and conclude that chewing gum does not have a statistically significant effect on typing speed. Additionally, the three participants also show that they have statistically significant typing speeds than the baseline participant(Chris). This indicates that individual differences between participants play a significant role in typing speed, further emphasizing the importance of accounting for participant variability in our analysis.   
-Essentially, we are able to conclude the following:    
-- Listening to music has a statistically significant positive effect on typing speed. In our experiment, participants who listened to music typed, on average, about 3.5 WPM faster than those who did not listen to music.<br>
-- Chewing gum does not have a statistically significant effect on typing speed. The data suggests a slight decrease in WPM when chewing gum, but this effect is only significant at the 0.1 level, not the required 0.05 level. Therefore, this conclusion is marginal, but we cannot confidently state that gum has a meaningful impact on typing speed.   
-- There is no significant interaction effect between music and gum on typing speed. The lack of a significant interaction term in our model indicates that the effects of music and gum on typing speed are independent of each other.   
-- The largest source of variation and significance in typing speed comes from individual differences between participants. The participants themselves were consistent around their own average WPM, but there were large differences in average WPM between participants. This suggests that inherent typing ability or other individual factors play a more substantial role in determining typing speed than the experimental treatments.  
 
-**Tables, Figures, & Code**: 
+Based on the aforementioned ANOVA results, we find that the p-value for the music treatment is 0.045, which is less than our significance level of 0.05. Therefore, we reject the null hypothesis for music and conclude that listening to music has a statistically significant effect on typing speed. On the other hand, the p-value for the gum treatment is 0.067, which is greater than 0.05. Thus, we fail to reject the null hypothesis for gum and conclude that chewing gum does not have a statistically significant effect on typing speed. Additionally, the three participants also show that they have statistically significant typing speeds than the baseline participant(Chris). This indicates that individual differences between participants play a significant role in typing speed, further emphasizing the importance of accounting for participant variability in our analysis.\
+Essentially, we are able to conclude the following:\
+- Listening to music has a statistically significant positive effect on typing speed. In our experiment, participants who listened to music typed, on average, about 3.5 WPM faster than those who did not listen to music.<br> - Chewing gum does not have a statistically significant effect on typing speed. The data suggests a slight decrease in WPM when chewing gum, but this effect is only significant at the 0.1 level, not the required 0.05 level. Therefore, this conclusion is marginal, but we cannot confidently state that gum has a meaningful impact on typing speed.\
+- There is no significant interaction effect between music and gum on typing speed. The lack of a significant interaction term in our model indicates that the effects of music and gum on typing speed are independent of each other.\
+- The largest source of variation and significance in typing speed comes from individual differences between participants. The participants themselves were consistent around their own average WPM, but there were large differences in average WPM between participants. This suggests that inherent typing ability or other individual factors play a more substantial role in determining typing speed than the experimental treatments.
+
+**Tables, Figures, & Code**:
 
 *Validity of the ANOVA Assumptions*
+
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', fig.width=6, fig.height=4, fig.asp=0.5, fig.cap="ANOVA Diagnostic Plots (Q-Q and Residuals vs Fitted)", fig.crop=TRUE}
 model <- lm(WPM ~ music + gum + participants, data = long_data)
 par(mfrow = c(1,2), mar = c(2,2,2,1), oma = c(0,0,0,0), asp=NA)
@@ -335,6 +340,7 @@ plot(model, which = 2)
 plot(model, which = 1)
 par(mfrow = c(1,1))
 ```
+
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 sw <- shapiro.test(residuals(model))
 
@@ -358,7 +364,9 @@ knitr::kable(bt_table,
              align = "c",
              caption = "Bartlett Test for Homogeneity of Variances")
 ```
+
 *AIC and BIC Model Selection*
+
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 library(knitr)
 model_summary <- data.frame(
@@ -376,36 +384,38 @@ RSS = c(8586.2, 8589.2, 8778.5, 9072.3, 23522.5)
 
 kable(model_summary, digits = 2, caption = "Stepwise Model Selection for WPM")
 ```
-*Additional Code Found in Appendices*   
-The following code is organized and found in the appendices section in the following order:  
-6.1) Summary Statistics from Section 3(Data Collection~Data Presentation)   
-6.2) Box Plot and Line Graph from Section 4(Analysis~Exploratory Data)   
-6.3) Regression Table from Section 4(Analysis~Hypothesis Testing)   
-6.4) Assumption Graphs from Section 4(Analysis~Tables, Figures, & Code)   
-6.5) Assumption Tables from Section 4(Analysis~Tables, Figures, & Code)   
-6.6) AIC and BIC Model Selection from Section 4(Analysis~Tables, Figures, & Code)   
-6.7) Initial Data Frame of Experiment Results   
-6.8) ANOVA Model Using Averages(instead of raw data)   
-6.9) ANOVA Model Using Raw Data(before AIC/BIC optimization)   
-6.10) Full AIC/BIC Model Selection   
-6.11) Interaction Plot Visual    
-[6.1 - 6.6 are snippets of code that were used in the report's sections 1-5; the output of these snippets are hidden in the appendix, but visible in the report sections]    
-[6.7 - 6.11 are snippets of code that were NOT used in the report's sections 1-5; the output of these snippets are visible in the appendix]   
+
+*Additional Code Found in Appendices*\
+The following code is organized and found in the appendices section in the following order:\
+6.1) Summary Statistics from Section 3(Data Collection\~Data Presentation)\
+6.2) Box Plot and Line Graph from Section 4(Analysis\~Exploratory Data)\
+6.3) Regression Table from Section 4(Analysis\~Hypothesis Testing)\
+6.4) Assumption Graphs from Section 4(Analysis\~Tables, Figures, & Code)\
+6.5) Assumption Tables from Section 4(Analysis\~Tables, Figures, & Code)\
+6.6) AIC and BIC Model Selection from Section 4(Analysis\~Tables, Figures, & Code)\
+6.7) Initial Data Frame of Experiment Results\
+6.8) ANOVA Model Using Averages(instead of raw data)\
+6.9) ANOVA Model Using Raw Data(before AIC/BIC optimization)\
+6.10) Full AIC/BIC Model Selection\
+6.11) Interaction Plot Visual\
+\[6.1 - 6.6 are snippets of code that were used in the report's sections 1-5; the output of these snippets are hidden in the appendix, but visible in the report sections\]\
+\[6.7 - 6.11 are snippets of code that were NOT used in the report's sections 1-5; the output of these snippets are visible in the appendix\]
 
 ------------------------------------------------------------------------
 
 # Conclusions
 
 -   Based on the ANOVA results, we conclude that listening to music has a statistically significant positive effect on typing speed, while chewing gum does not have a statistically significant effect. There is no significant interaction effect between music and gum on typing speed. The largest source of variation in typing speed comes from individual differences between participants.
--   However, due to the nature of our experimentation, these results can only be generalized to similar individuals performing similar tasks to the task in our experiment. Further research with a larger and more diverse sample size would be necessary to generalize these findings to a broader population. However, it is safe to say that for the participants in our study, listening to music had a significant effect by increasing the typing speed by ~3.5 WPM.
+-   However, due to the nature of our experimentation, these results can only be generalized to similar individuals performing similar tasks to the task in our experiment. Further research with a larger and more diverse sample size would be necessary to generalize these findings to a broader population. However, it is safe to say that for the participants in our study, listening to music had a significant effect by increasing the typing speed by \~3.5 WPM.
 -   The results of our experiments can be attributed to a number of possible reasons. For example, music may have had a positive, significant effect on typing speed since the participants could choose music they would typically study to, which may have enhanced their focus on the task at hand. Adversely, the music could have provided rhythm that the participants could have subconsciously followed while typing, leading to increased speed. On the other hand, chewing gum may not have had a significant effect because it could have been a distraction for some participants, or the act of chewing may not have provided any cognitive benefits that would translate to improved typing performance.
 -   Our experiment was limited in its findings mostly to the small sample size and the inability to control certain confounding variables. Despite our randomization, blocking, and replication of trials, there is no way to control the fact that people all have different inherent typing speeds and styles. Additionally, if this experiment were to be repeated, certain confounding variables should be controlled for, such as the type of music the participants listened to, the manufacturer of the keyboards used, the gum flavor and brand, the time of day the experiment was conducted, and the environment in which the participants completed the task. Future studies could also explore different types of tasks beyond typing speed to see if the effects of music and gum vary across different cognitive or motor activities.
 
 ------------------------------------------------------------------------
 
-# Appendices   
+# Appendices
 
-**6.1) Summary Statistics from Section 3(Data Collection~Data Presentation)**   
+**6.1) Summary Statistics from Section 3(Data Collection\~Data Presentation)**
+
 ```{r, eval=FALSE}
 library(tidyverse)
 library(knitr)
@@ -497,7 +507,8 @@ kable(
 )
 ```
 
-**6.2) Box Plot and Line Graph from Section 4(Analysis~Exploratory Data)**  
+**6.2) Box Plot and Line Graph from Section 4(Analysis\~Exploratory Data)**
+
 ```{r, eval=FALSE}
 library(ggplot2)
 library(tidyr)
@@ -607,8 +618,8 @@ monkey_lineplot <- ggplot(
 monkey_lineplot
 ```
 
+**6.3) Regression Table from Section 4(Analysis\~Hypothesis Testing)**
 
-**6.3) Regression Table from Section 4(Analysis~Hypothesis Testing)**   
 ```{r, eval=FALSE}
 library(broom)
 library(knitr)
@@ -623,8 +634,8 @@ kable(
 )
 ```
 
+**6.4) Assumption Graphs from Section 4(Analysis\~Tables, Figures, & Code)**
 
-**6.4) Assumption Graphs from Section 4(Analysis~Tables, Figures, & Code)**   
 ```{r, eval=FALSE}
 model <- lm(WPM ~ music + gum + participants, data = long_data)
 par(mfrow = c(1,2), mar = c(2,2,2,1), oma = c(0,0,0,0), asp=NA)
@@ -633,8 +644,8 @@ plot(model, which = 1)
 par(mfrow = c(1,1))
 ```
 
+**6.5) Assumption Tables from Section 4(Analysis\~Tables, Figures, & Code)**
 
-**6.5) Assumption Tables from Section 4(Analysis~Tables, Figures, & Code)**   
 ```{r, eval=FALSE}
 sw <- shapiro.test(residuals(model))
 
@@ -659,8 +670,8 @@ knitr::kable(bt_table,
              caption = "Bartlett Test for Homogeneity of Variances")
 ```
 
+**6.6) AIC and BIC Model Selection from Section 4(Analysis\~Tables, Figures, & Code)**
 
-**6.6) AIC and BIC Model Selection from Section 4(Analysis~Tables, Figures, & Code)**   
 ```{r, eval=FALSE}
 library(knitr)
 model_summary <- data.frame(
@@ -679,8 +690,8 @@ RSS = c(8586.2, 8589.2, 8778.5, 9072.3, 23522.5)
 kable(model_summary, digits = 2, caption = "Stepwise Model Selection for WPM")
 ```
 
+**6.7) Initial Data Frame of Experiment Results**
 
-**6.7) Initial Data Frame of Experiment Results**   
 ```{r}
 library(dbplyr)
 library(tidyr)
@@ -718,8 +729,8 @@ monkey_data_frame <- data.frame(
 monkey_data_frame
 ```
 
+**6.8) ANOVA Model Using Averages(instead of raw data)**
 
-**6.8) ANOVA Model Using Averages(instead of raw data)**   
 ```{r}
 model_average <- lm(average ~ gum + music + gum*music + participants, 
                     data = monkey_data_frame)
@@ -730,8 +741,8 @@ average_summary_result <- summary(model_average)
 print(average_summary_result)
 ```
 
+**6.9) ANOVA Model Using Raw Data(before AIC/BIC optimization)**
 
-**6.9) ANOVA Model Using Raw Data(before AIC/BIC optimization)**  
 ```{r}
 long_data <- monkey_data_frame |>
     pivot_longer(
@@ -745,8 +756,8 @@ anova(model_all)
 print(summary(model_all))
 ```
 
+**6.10) Full AIC/BIC Model Selection**
 
-**6.10) Full AIC/BIC Model Selection**   
 ```{r}
 library(car)
 model_all <- lm(WPM ~ music + gum + music*gum + participants, data = long_data)
@@ -755,7 +766,8 @@ n <- nrow(long_data)
 step(model_all, direction = "both", k =log(n))
 ```
 
-**6.11) Interaction Plot Visual**   
+**6.11) Interaction Plot Visual**
+
 ```{r}
 library(ggplot2)
 
@@ -774,4 +786,3 @@ interaction_plot <- ggplot(mean_data, aes(x = music, y = Mean_WPM,
 
 interaction_plot
 ```
-
