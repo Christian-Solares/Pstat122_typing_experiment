@@ -40,7 +40,7 @@ library(DescTools)
 [**STUDENT NAME**]{style="color: blue;"}
 :::
 
--   STUDENT 1 (NetID 1)
+-   Chris Zaragoza (A1A0T32)
 -   Christian Solares (A022P62)
 -   STUDENT 3 (NetID 3)
 -   STUDENT 4 (NetID 4)
